@@ -61,6 +61,11 @@ def scrape_website():
 @client.event
 async def on_ready():
     print(f'Bot logged in as {client.user}')
+    channel = client.get_channel(DISCORD_CHANNEL_ID)
+    if channel:
+        await channel.send("Bot started successfully! Testing Discord connection.")
+    else:
+        print("Channel not found! Check DISCORD_CHANNEL_ID.")
     check_website.start()  # Start the periodic check
 
 # Periodic website check
