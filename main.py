@@ -12,9 +12,9 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 # Configuration
-WEBSITE_URL = "https://example.com/blog"  # Replace with the target website
-DISCORD_CHANNEL_ID = 123456789012345678  # Replace with your channel ID
-CHECK_INTERVAL = 3600  # Check every hour (in seconds)
+WEBSITE_URL = "https://withhive.com/notice/game/2409"  # Replace with the target website
+DISCORD_CHANNEL_ID = 1353667776111312926  # Replace with your channel ID
+CHECK_INTERVAL = 1800  # Check every hour (in seconds)
 DATA_FILE = "seen_posts.json"  # File to store seen post IDs
 
 # Load or initialize seen posts
