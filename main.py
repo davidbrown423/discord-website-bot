@@ -71,13 +71,22 @@ async def on_ready():
     channel = client.get_channel(DISCORD_CHANNEL_ID)
     if channel:
         await channel.send("Bot started successfully! Testing Discord connection.")
+        # Force a scrape on startup
+        print("Forcing a scrape on startup...")
+        new_posts = scrape_website()
+        for post in new_posts:
+            message = f"New notice: {post['title']}\nLink: {post['link']}\nDate: {post['date']}"
+            await channel.send(message)
+            print(f"Posted on startup: {post['title']}")
     else:
         print("Channel not found! Check DISCORD_CHANNEL_ID.")
+    print("Starting periodic check task...")
     check_website.start()  # Start the periodic check
 
 # Periodic website check
 @tasks.loop(seconds=CHECK_INTERVAL)
 async def check_website():
+    print("Periodic check triggered...")
     channel = client.get_channel(DISCORD_CHANNEL_ID)
     if not channel:
         print("Channel not found!")
