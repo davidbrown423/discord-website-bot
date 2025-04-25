@@ -4,7 +4,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-from datetime import datetime
+import asyncio
+import aiohttp
 
 # Discord bot setup
 intents = discord.Intents.default()
@@ -31,7 +32,8 @@ def save_seen_posts(posts):
 # Scrape the website
 def scrape_website():
     try:
-        response = requests.get(WEBSITE_URL, timeout=10)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124'}
+        response = requests.get(WEBSITE_URL, timeout=10, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         posts = soup.find_all('article')  # Find all notice articles
@@ -64,6 +66,28 @@ def scrape_website():
         print(f"Error scraping website: {e}")
         return []
 
+# Async function to post to Discord
+async def post_to_discord(new_posts):
+    channel = client.get_channel(DISCORD_CHANNEL_ID)
+    if not channel:
+        print("Channel not found!")
+        return
+    for post in new_posts:
+        message = f"New notice: {post['title']}\nLink: {post['link']}\nDate: {post['date']}"
+        await channel.send(message)
+        print(f"Posted: {post['title']}")
+
+# Periodic check (outside Discord events)
+async def periodic_check():
+    while True:
+        print("Periodic check triggered...")
+        if client.is_ready():
+            new_posts = scrape_website()
+            await post_to_discord(new_posts)
+        else:
+            print("Bot not ready yet, waiting...")
+        await asyncio.sleep(CHECK_INTERVAL)
+
 # Discord bot events
 @client.event
 async def on_ready():
@@ -71,32 +95,20 @@ async def on_ready():
     channel = client.get_channel(DISCORD_CHANNEL_ID)
     if channel:
         await channel.send("Bot started successfully! Testing Discord connection.")
-        # Force a scrape on startup
-        print("Forcing a scrape on startup...")
-        new_posts = scrape_website()
-        for post in new_posts:
-            message = f"New notice: {post['title']}\nLink: {post['link']}\nDate: {post['date']}"
-            await channel.send(message)
-            print(f"Posted on startup: {post['title']}")
     else:
         print("Channel not found! Check DISCORD_CHANNEL_ID.")
-    print("Starting periodic check task...")
-    check_website.start()  # Start the periodic check
 
-# Periodic website check
-@tasks.loop(seconds=CHECK_INTERVAL)
-async def check_website():
-    print("Periodic check triggered...")
-    channel = client.get_channel(DISCORD_CHANNEL_ID)
-    if not channel:
-        print("Channel not found!")
-        return
+# Main function to run both Discord bot and periodic check
+async def main():
+    # Start the periodic check in the background
+    asyncio.create_task(periodic_check())
+    # Start the Discord bot
+    await client.start(os.getenv('DISCORD_TOKEN'))
 
+# Run the bot
+if __name__ == "__main__":
+    print("Starting bot and initial scrape...")
+    # Initial scrape before Discord bot fully starts
     new_posts = scrape_website()
-    for post in new_posts:
-        message = f"New notice: {post['title']}\nLink: {post['link']}\nDate: {post['date']}"
-        await channel.send(message)
-        print(f"Posted: {post['title']}")
-
-# Start the bot
-client.run(os.getenv('DISCORD_TOKEN'))  # Token from environment variable
+    # Run the main async loop
+    asyncio.run(main())
