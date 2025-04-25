@@ -14,7 +14,7 @@ client = discord.Client(intents=intents)
 # Configuration
 WEBSITE_URL = "https://withhive.com/notice/game/2409"  # MLB Perfect Inning notices
 DISCORD_CHANNEL_ID = 1353667776111312926  # Replace with your channel ID
-CHECK_INTERVAL = 60  # Check every hour (in seconds)
+CHECK_INTERVAL = 60  # Check every minute (for testing)
 DATA_FILE = "seen_posts.json"  # File to store seen post IDs
 
 # Load or initialize seen posts
@@ -36,6 +36,7 @@ def scrape_website():
         soup = BeautifulSoup(response.text, 'html.parser')
         posts = soup.find_all('article')  # Find all notice articles
         new_posts = []
+        save_seen_posts([])  # Reset seen posts for testing
         seen_posts = load_seen_posts()
 
         for post in posts:
