@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     libgraphene-1.0-0 \
     libatomic1 \
     libxslt1.1 \
-    libwoff2-1.0.2 \
+    libwoff1 \
     libvpx7 \
     libevent-2.1-7 \
     libopus0 \
