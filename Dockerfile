@@ -19,12 +19,12 @@ RUN apt-get update && apt-get install -y \
     libgraphene-1.0-0 \
     libatomic1 \
     libxslt1.1 \
-    libwoff2-1.0.2 \
+    libwoff2dec1.0.2 \
     libvpx7 \
     libevent-2.1-7 \
     libopus0 \
     libgstreamer-plugins-base1.0-0 \
-    libgstreamer-plugins-good1.0-0 \
+    gstreamer1.0-plugins-good \
     libgstreamer-plugins-bad1.0-0 \
     libflite1 \
     libwebpdemux2 \
