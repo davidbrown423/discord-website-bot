@@ -12,7 +12,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 # Configuration
-WEBSITE_URL = "https://withhive.com/notice/game/2409"  # Replace with the target website
+WEBSITE_URL = "https://withhive.com/notice/game/2409"  # MLB Perfect Inning notices
 DISCORD_CHANNEL_ID = 1353667776111312926  # Replace with your channel ID
 CHECK_INTERVAL = 1800  # Check every hour (in seconds)
 DATA_FILE = "seen_posts.json"  # File to store seen post IDs
@@ -34,24 +34,30 @@ def scrape_website():
         response = requests.get(WEBSITE_URL, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
-        # Adjust the selector based on the website's structure
-        posts = soup.find_all('div', class_='post')  # Example selector
+        posts = soup.find_all('article')  # Find all notice articles
         new_posts = []
         seen_posts = load_seen_posts()
 
         for post in posts:
-            title_elem = post.find('a')  # Example: title in <a> tag
-            if not title_elem:
+            link_elem = post.find('a')
+            if not link_elem or 'href' not in link_elem.attrs:
+                continue
+            title_elem = link_elem.find('strong')
+            date_elem = link_elem.find('time')
+            if not title_elem or not date_elem:
                 continue
             title = title_elem.text.strip()
-            link = title_elem['href']
-            post_id = link  # Use link as unique ID (adjust if needed)
+            relative_link = link_elem['href']  # e.g., /notice/game/2409/13961
+            link = f"https://withhive.com{relative_link}"  # Full URL
+            post_id = relative_link  # Use relative link as unique ID
+            date = date_elem.text.strip()  # e.g., 04-24-2025
 
             if post_id not in seen_posts:
-                new_posts.append({'title': title, 'link': link, 'id': post_id})
+                new_posts.append({'title': title, 'link': link, 'id': post_id, 'date': date})
                 seen_posts.append(post_id)
 
         save_seen_posts(seen_posts)
+        print(f"Found {len(posts)} posts, {len(new_posts)} new.")
         return new_posts
     except Exception as e:
         print(f"Error scraping website: {e}")
@@ -78,7 +84,7 @@ async def check_website():
 
     new_posts = scrape_website()
     for post in new_posts:
-        message = f"New post: {post['title']}\nLink: {post['link']}"
+        message = f"New notice: {post['title']}\nLink: {post['link']}\nDate: {post['date']}"
         await channel.send(message)
         print(f"Posted: {post['title']}")
 
