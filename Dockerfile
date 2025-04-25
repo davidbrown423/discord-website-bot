@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libpangocairo-1.0-0 \
     libxss1 \
     libgtk-3-0 \
-    libx11-xcb1 \  # Added this library for Playwright
+    libx11-xcb1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
