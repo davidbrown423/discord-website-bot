@@ -42,8 +42,12 @@ async def fetch_latest_post():
         for post in posts:
             try:
                 post_id = await post.get_attribute("data-id")
-                title_elem = await post.query_selector(".col.title")
-                date_elem = await post.query_selector(".col.date")
+                title_elem = await post.query_selector(".title")  # Updated selector
+                date_elem = await post.query_selector(".date")    # Updated selector
+
+                if title_elem is None or date_elem is None:
+                    print(f"⚠️ Skipping post {post_id}: Missing title or date element")
+                    continue
 
                 title = await title_elem.inner_text()
                 date_str = await date_elem.inner_text()
@@ -77,7 +81,7 @@ async def check_for_new_post():
     latest = posts[0]  # Get the most recent post
     if latest["id"] != last_seen_id:
         print(f"🆕 New post found: {latest['title']}")
-        save_last_post_id(latest["id"])
+        save_last_post_id(latest['id'])
 
         channel = bot.get_channel(CHANNEL_ID)
         if channel:
