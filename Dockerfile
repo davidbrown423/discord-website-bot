@@ -13,6 +13,32 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     libgtk-3-0 \
     libx11-xcb1 \
+    # Additional dependencies for Playwright
+    libgstreamer1.0-0 \
+    libgtk-4-1 \
+    libgraphene-1.0-0 \
+    libatomic1 \
+    libxslt1.1 \
+    libwoff2-1.0.2 \
+    libvpx7 \
+    libevent-2.1-7 \
+    libopus0 \
+    libgstreamer-plugins-base1.0-0 \
+    libgstreamer-plugins-good1.0-0 \
+    libgstreamer-plugins-bad1.0-0 \
+    libflite1 \
+    libwebpdemux2 \
+    libavif15 \
+    libharfbuzz-icu0 \
+    libwebpmux3 \
+    libenchant-2-2 \
+    libsecret-1-0 \
+    libhyphen0 \
+    libmanette-0.2-0 \
+    libpsl5 \
+    libnghttp2-14 \
+    libgles2 \
+    libx264-164 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
