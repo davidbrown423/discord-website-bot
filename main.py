@@ -12,7 +12,7 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 # Configuration
-WEBSITE_URL = "https://withhive.com/notice/game/2409"  # MLB Perfect Inning notices
+WEBSITE_URL = "https://withhive.com/notice/game/2409"  # Gods and Demons
 DISCORD_CHANNEL_ID = 1353667776111312926  # Replace with your channel ID
 CHECK_INTERVAL = 1800  # Check every hour (in seconds)
 DATA_FILE = "seen_posts.json"  # File to store seen post IDs
